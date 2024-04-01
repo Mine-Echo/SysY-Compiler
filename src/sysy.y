@@ -34,19 +34,6 @@ extern NodePtr root;
 
 
 %%
-/* CompUnit : Exp {root = $1; }
-Exp : Term { $$ = $1;}
-    | SUB Exp %prec UMINUS { $$ = new TreeUnaryExpr(OP_Neg, $2); }
-    | ADD Exp %prec UPLUS  { $$ = $2; }
-    | Exp ADD Exp { $$ = new TreeBinaryExpr(OpType::OP_Add, $1, $3); }
-    | Exp SUB Exp { $$ = new TreeBinaryExpr(OpType::OP_Sub, $1, $3); }
-    | Exp MUL Exp { $$ = new TreeBinaryExpr(OpType::OP_Mul, $1, $3); }
-    | Exp DIV Exp { $$ = new TreeBinaryExpr(OpType::OP_Div, $1, $3); }
-    ;
-
-Term : INT { $$ = new TreeIntegerLiteral($1); }
-     ; */
-
 CompUnit : Decl
          | FuncDef
          | CompUnit Decl
@@ -57,7 +44,7 @@ CompUnit : Decl
       ; */
 Decl : VarDecl
      ;
-//修改
+//replace BType with INT_TYPE
 VarDecl : INT_TYPE VarDefList SEMICOLON
         ;
 VarDefList : VarDef
@@ -71,7 +58,7 @@ ArrayDef : /*empty*/
          ;
 InitVal : Exp
         ;
-
+//replace FuncType with INT_TYPE|VOID_TYP
 FuncDef : INT_TYPE IDENT LEFT_PAREN RIGHT_PAREN Block
         | VOID_TYPE IDENT LEFT_PAREN RIGHT_PAREN Block
         | INT_TYPE IDENT LEFT_PAREN FuncFParams RIGHT_PAREN Block
@@ -83,7 +70,7 @@ FuncDef : INT_TYPE IDENT LEFT_PAREN RIGHT_PAREN Block
 FuncFParams : FuncFParam
             | FuncFParams COMMA FuncFParam
             ;
-//修改
+//replace BType with INT_TYPE
 FuncFParam : INT_TYPE IDENT 
            | INT_TYPE IDENT LEFT_BRACKET RIGHT_BRACKET ArrayDef
            ;
@@ -163,7 +150,6 @@ LOrExp : LAndExp
 %%
 
 void yyerror(const char *s) {
-    extern int yylineno;
-    printf("error: %s\n%d\n", s,yylineno);
+    printf("error: %s\n", s);
     syntax_error = 1;
 }

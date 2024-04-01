@@ -13,8 +13,8 @@ letter_ [a-zA-Z_]
 
 %%
 
-"//"(.)*(\n)?                      {printf("%s",yytext);}
-"/*"([^*]|(\*+[^*/]))*\*+"/"    {printf("%s",yytext);}
+"//"(.)*(\n)?                   {printf("%s",yytext);}
+"/*"([^*]|(\*+[^*/]))*"*/"      {printf("%s",yytext);}
 
 "int"                           {printf("%s",yytext);return INT_TYPE;}
 "void"                          {printf("%s",yytext);return VOID_TYPE;}
