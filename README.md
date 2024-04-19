@@ -1,4 +1,4 @@
-# AccSys CMake Template
+# Compiler
 
 ## Build
 
