@@ -54,6 +54,6 @@ letter_ [a-zA-Z_]
 {letter_}({letter_}|{digit})*   {printf("%s",yytext);yylval.str = strdup(yytext);return IDENT;}
 
 {blank}                         {printf("%s",yytext);}
-.                               { printf("ERROR(%s)\n", yytext); }
+.                               {printf("ERROR(%s)\n", yytext); }
 
 %%
