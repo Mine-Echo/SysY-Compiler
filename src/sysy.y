@@ -89,7 +89,7 @@ BlockItem : VarDecl  {$$=new BlockItemNode();$$->addSon($1);}
           ;
 Stmt : LVal ASSIGN Exp SEMICOLON                        {$$=new StmtNode();$$->addSon($1);$$->addSon(new AssignNode());$$->addSon($3);$$->addSon(new SemicolonNode());}
      | Exp SEMICOLON                                    {$$=new StmtNode();$$->addSon($1);$$->addSon(new SemicolonNode());}
-     | Block                                            {$$=new StmtNode();$$->addSon($1);$$->addSon(new SemicolonNode());}
+     | Block                                            {$$=new StmtNode();$$->addSon($1);}
      | IF LEFT_PAREN Exp RIGHT_PAREN Stmt               {$$=new StmtNode();$$->addSon(new IfNode());$$->addSon(new LeftParenNode());$$->addSon($3);$$->addSon(new RightParenNode());$$->addSon($5);}
      | IF LEFT_PAREN Exp RIGHT_PAREN Stmt ELSE Stmt     {$$=new StmtNode();$$->addSon(new IfNode());$$->addSon(new LeftParenNode());$$->addSon($3);$$->addSon(new RightParenNode());$$->addSon($5);$$->addSon(new ElseNode());$$->addSon($7);}
      | WHILE LEFT_PAREN Exp RIGHT_PAREN Stmt            {$$=new StmtNode();$$->addSon(new WhileNode());$$->addSon(new LeftParenNode());$$->addSon($3);$$->addSon(new RightParenNode());$$->addSon($5);}
@@ -107,7 +107,7 @@ LVal : IDENT         {$$=new LValNode();$$->addSon(new IdentNode($1));}
 Index : LEFT_BRACKET Exp RIGHT_BRACKET           {$$=new IndexNode();$$->addSon(new LeftBracketNode());$$->addSon($2);$$->addSon(new RightBracketNode());}
       | Index LEFT_BRACKET Exp RIGHT_BRACKET     {$$=new IndexNode();$$->addSon($1);$$->addSon(new LeftBracketNode());$$->addSon($3);$$->addSon(new RightBracketNode());}
       ;
-PrimaryExp : LEFT_PAREN Exp RIGHT_PAREN   {$$=new PrimaryExpNode();}
+PrimaryExp : LEFT_PAREN Exp RIGHT_PAREN   {$$=new PrimaryExpNode();$$->addSon(new LeftParenNode());$$->addSon($2);$$->addSon(new RightParenNode());}
            | LVal                         {$$=new PrimaryExpNode();$$->addSon($1);}
            | INT_CONST                    {$$=new PrimaryExpNode();$$->addSon(new IntConstNode($1));}
            ;

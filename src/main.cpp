@@ -1,5 +1,5 @@
 #include "ast/ast.h"
-
+#include "semantic_analysis/type.h"
 #include <fmt/core.h>
 
 extern int yyparse();
@@ -14,5 +14,7 @@ int main(int argc, char **argv) {
         return 1;
     fmt::print("\n");
     print_tree(root);
+    //semanticAnalysis
+    semanticAnalysis(root);
     return 0;
 }
