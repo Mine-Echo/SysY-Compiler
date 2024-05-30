@@ -1,20 +1,25 @@
 #include "ast/ast.h"
-#include "semantic_analysis/type.h"
+#include "semant/type.h"
 #include <fmt/core.h>
 
 extern int yyparse();
-// int syntax_error=0;
+extern int syntax_error;
 extern FILE* yyin;
 
 Node* root;
+Node* tree;
 
 int main(int argc, char **argv) {
     yyin = fopen(argv[1], "r");
-    if(yyparse()==1)
+    if(yyparse()==1)    // syntax error
         return 1;
     fmt::print("\n");
-    print_tree(root);
-    //semanticAnalysis
-    semanticAnalysis(root);
+
+    if (!syntax_error){
+        tree = construct_ast_tree(root, tree);
+        print_tree(tree);
+        semanticAnalysis(root);
+    }
+
     return 0;
 }

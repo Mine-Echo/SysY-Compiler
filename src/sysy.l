@@ -1,59 +1,71 @@
 %option noinput
 %option nounput
 %option noyywrap
+%option yylineno
 
 %{
 #include <ast/ast.h>
 #include "sysy.tab.hh"
+#include <stdio.h>
+#include <stdlib.h>
+extern int syntax_error;
 %}
 
-digit [0-9]
+dec_digit [0-9]
+oct_digit [0-7]
+hex_digit [0-9a-fA-F]
 blank [ \t\n]
 letter_ [a-zA-Z_]
 
 %%
 
-"//"(.)*(\n)?                   {printf("%s",yytext);}
-"/*"([^*]|(\*+[^*/]))*"*/"      {printf("%s",yytext);}
+"//"([^\n])*                    {}
+"/*"([^*]|(\*+[^*/]))*"*/"      {}
 
-"int"                           {printf("%s",yytext);return INT_TYPE;}
-"void"                          {printf("%s",yytext);return VOID_TYPE;}
-"if"                            {printf("%s",yytext);return IF;}
-"else"                          {printf("%s",yytext);return ELSE;}
-"while"                         {printf("%s",yytext);return WHILE;}
-"break"                         {printf("%s",yytext);return BREAK;}
-"continue"                      {printf("%s",yytext);return CONTINUE;}
-"return"                        {printf("%s",yytext);return RETURN;}
+"int"                           {return INT_TYPE;}
+"void"                          {return VOID_TYPE;}
+"if"                            {return IF;}
+"else"                          {return ELSE;}
+"while"                         {return WHILE;}
+"break"                         {return BREAK;}
+"continue"                      {return CONTINUE;}
+"return"                        {return RETURN;}
 
-";"                             {printf("%s",yytext);return SEMICOLON;}
-","                             {printf("%s",yytext);return COMMA;}
-"("                             {printf("%s",yytext);return LEFT_PAREN;}
-")"                             {printf("%s",yytext);return RIGHT_PAREN;}
-"["                             {printf("%s",yytext);return LEFT_BRACKET;}
-"]"                             {printf("%s",yytext);return RIGHT_BRACKET;}
-"{"                             {printf("%s",yytext);return LEFT_CURLY_BRACKET;}
-"}"                             {printf("%s",yytext);return RIGHT_CURLY_BRACKET;}
+";"                             {return SEMICOLON;}
+","                             {return COMMA;}
+"("                             {return LEFT_PAREN;}
+")"                             {return RIGHT_PAREN;}
+"["                             {return LEFT_BRACKET;}
+"]"                             {return RIGHT_BRACKET;}
+"{"                             {return LEFT_CURLY_BRACKET;}
+"}"                             {return RIGHT_CURLY_BRACKET;}
 
-">="                            {printf("%s",yytext);return GE;}
-"<="                            {printf("%s",yytext);return LE;}
-"=="                            {printf("%s",yytext);return EQ;}
-"!="                            {printf("%s",yytext);return NE;}
-"+"                             {printf("%s",yytext);return ADD;}
-"&&"                            {printf("%s",yytext);return AND;}
-"||"                            {printf("%s",yytext);return OR;}
-"-"                             {printf("%s",yytext);return SUB;}
-"!"                             {printf("%s",yytext);return NOT;}
-"*"                             {printf("%s",yytext);return MUL;}
-"/"                             {printf("%s",yytext);return DIV;}
-"%"                             {printf("%s",yytext);return MOD;}
-">"                             {printf("%s",yytext);return G;}
-"<"                             {printf("%s",yytext);return L;}
-"="                             {printf("%s",yytext);return ASSIGN;}
+">="                            {return GE;}
+"<="                            {return LE;}
+"=="                            {return EQ;}
+"!="                            {return NE;}
+"+"                             {return ADD;}
+"&&"                            {return AND;}
+"||"                            {return OR;}
+"-"                             {return SUB;}
+"!"                             {return NOT;}
+"*"                             {return MUL;}
+"/"                             {return DIV;}
+"%"                             {return MOD;}
+">"                             {return G;}
+"<"                             {return L;}
+"="                             {return ASSIGN;}
 
-{digit}+                        {printf("%s",yytext);yylval.ival = atoi(yytext);return INT_CONST;}
-{letter_}({letter_}|{digit})*   {printf("%s",yytext);yylval.str = strdup(yytext);return IDENT;}
+[1-9]{dec_digit}*                   {yylval.ival = atoi(yytext); return INT_CONST;}
+"0"{oct_digit}*                     {yylval.ival = (int)strtol(yytext, NULL, 8); return INT_CONST;}
+("0x"|"0X"){hex_digit}+             {yylval.ival = (int)strtol(yytext, NULL, 16); return INT_CONST;}
+{letter_}({letter_}|{dec_digit})*   {yylval.str = strdup(yytext);return IDENT;}
 
-{blank}                         {printf("%s",yytext);}
-.                               {printf("ERROR(%s)\n", yytext); }
+{blank}                         {}
+
+"0"{dec_digit}+                 {syntax_error=1; printf("[SysY] lexical error at line %d: Illegal octal number '%s'.\n", yylineno, yytext); yylval.ival = 0; return INT_CONST;}
+("0x"|"0X")[0-9a-zA-Z]+         {syntax_error=1; printf("[SysY] lexical error at line %d: Illegal hexadecimal number '%s'.\n", yylineno, yytext); yylval.ival = 0; return INT_CONST;}
+.                               {syntax_error=1; printf("[SysY] lexical error at Line %d: Unexpected characters '%s'.\n", yylineno, yytext);}
+{dec_digit}+{letter_}+          {syntax_error=1; printf("[SysY] lexical error at Line %d: Illegal identifier '%s'.\n", yylineno, yytext);}
 
 %%

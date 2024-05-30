@@ -3,6 +3,7 @@
 #include <type_traits>
 #include <string>
 #include <vector>
+#include <iostream>
 
 enum NodeType{
     //nonterminal
@@ -30,6 +31,7 @@ enum NodeType{
     RelExp,
     EqExp,
     LAndExp,
+    
     //terminal
     IntType,
     Semicolon,
@@ -498,3 +500,7 @@ struct OrNode: public Node{
 
 //print the tree
 void print_tree(Node* node, std::string prefix = "", std::string ident = "");
+// void print_tree(Node* node, std::string prefix = "", std::string ident = "", bool print_bar = true, bool flag = false);
+NonTerminalNode* construct_ast_tree(Node* node, Node* tree);
+
+// bool need_print(Node* node);

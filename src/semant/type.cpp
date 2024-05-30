@@ -1,4 +1,4 @@
-#include "semantic_analysis/type.h"
+#include "semant/type.h"
 #include <map>
 #include <fmt/core.h>
 // symbol_table
