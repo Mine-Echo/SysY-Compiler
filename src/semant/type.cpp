@@ -2,10 +2,10 @@
 #include <map>
 #include <fmt/core.h>
 // symbol_table
-std::vector<std::map<std::string, Type *>> variable_table;
-std::vector<std::map<std::string, FunctionType *>> func_table;
+std::vector<std::map<std::string, semant::Type *>> variable_table;
+std::vector<std::map<std::string, semant::FunctionType *>> func_table;
 
-Type *searchVariable(std::string name)
+semant::Type *semant::searchVariable(std::string name)
 {
     for (int i = variable_table.size() - 1; i >= 0; i--)
     {
@@ -22,7 +22,7 @@ Type *searchVariable(std::string name)
     return nullptr;
 }
 
-FunctionType *searchFunction(std::string name)
+semant::FunctionType *semant::searchFunction(std::string name)
 {
     for (int i = func_table.size() - 1; i >= 0; i--)
     {
@@ -35,7 +35,7 @@ FunctionType *searchFunction(std::string name)
     return nullptr;
 }
 
-bool isParamsTypeEqual(Type *type1, Type *type2)
+bool semant::isParamsTypeEqual(Type *type1, Type *type2)
 {
     if (type1->getType() != type2->getType())
         return false;
@@ -60,7 +60,7 @@ bool isParamsTypeEqual(Type *type1, Type *type2)
     return true;
 }
 
-void newScope()
+void semant::newScope()
 {
     std::map<std::string, Type *> v_table;
     variable_table.push_back(v_table);
@@ -68,7 +68,7 @@ void newScope()
     func_table.push_back(f_table);
 }
 
-void deleteScope()
+void semant::deleteScope()
 {
     std::map<std::string, Type *> &v_table = variable_table.back();
     for (auto &pair : v_table)
@@ -86,7 +86,7 @@ void deleteScope()
     func_table.pop_back();
 }
 
-void semanticAnalysis(Node *root)
+void semant::semanticAnalysis(Node *root)
 {
     newScope();
     // Input & output functions
@@ -124,7 +124,7 @@ void semanticAnalysis(Node *root)
     deleteScope();
 }
 
-void analyzeCompUnit(CompUnitNode *node)
+void semant::analyzeCompUnit(CompUnitNode *node)
 {
     fmt::print("analyzeCompUnit\n");
     if (auto n = node->sons[0]->as<CompUnitNode *>())
@@ -135,13 +135,13 @@ void analyzeCompUnit(CompUnitNode *node)
         analyzeFuncDef(reinterpret_cast<FuncDefNode *>(n));
 }
 
-void analyzeVarDecl(VarDeclNode *node)
+void semant::analyzeVarDecl(VarDeclNode *node)
 {
     fmt::print("analyzeVarDecl\n");
     analyzeVarDefList(reinterpret_cast<VarDefListNode *>(node->sons[1]));
 }
 
-void analyzeVarDefList(VarDefListNode *node)
+void semant::analyzeVarDefList(VarDefListNode *node)
 {
     fmt::print("VarDefListNode\n");
     if (auto n = node->sons[0]->as<VarDefNode *>()) // VarDef
@@ -154,7 +154,7 @@ void analyzeVarDefList(VarDefListNode *node)
     }
 }
 
-void analyzeVarDef(VarDefNode *node)
+void semant::analyzeVarDef(VarDefNode *node)
 {
     fmt::print("analyzeVarDef\n");
     IdentNode *id = reinterpret_cast<IdentNode *>(node->sons[0]);
@@ -192,7 +192,7 @@ void analyzeVarDef(VarDefNode *node)
     }
 }
 
-void analyzeArrayDef(ArrayDefNode *node, ArrayType *type)
+void semant::analyzeArrayDef(ArrayDefNode *node, ArrayType *type)
 {
     fmt::print("analyzeArrayDef\n");
     if (auto n = node->sons[0]->as<ArrayDefNode *>())
@@ -208,7 +208,7 @@ void analyzeArrayDef(ArrayDefNode *node, ArrayType *type)
     }
 }
 
-void analyzeFuncDef(FuncDefNode *node)
+void semant::analyzeFuncDef(FuncDefNode *node)
 {
     fmt::print("analyzeFuncDef\n");
     int num = node->sons.size();
@@ -254,7 +254,7 @@ void analyzeFuncDef(FuncDefNode *node)
     }
 }
 
-void analyzeFuncFParams(FuncFParamsNode *node, FunctionType *func_type)
+void semant::analyzeFuncFParams(FuncFParamsNode *node, FunctionType *func_type)
 {
     fmt::print("analyzeFuncFParams\n");
     if (auto n = node->sons[0]->as<FuncFParamNode *>())
@@ -270,7 +270,7 @@ void analyzeFuncFParams(FuncFParamsNode *node, FunctionType *func_type)
     }
 }
 
-void analyzeFuncFParam(FuncFParamNode *node, FunctionType *func_type)
+void semant::analyzeFuncFParam(FuncFParamNode *node, FunctionType *func_type)
 {
     fmt::print("analyzeFuncFParam\n");
     int num = node->sons.size();
@@ -298,7 +298,7 @@ void analyzeFuncFParam(FuncFParamNode *node, FunctionType *func_type)
     }
 }
 
-void analyzeBlock(BlockNode *node, FunctionType *func_type)
+void semant::analyzeBlock(BlockNode *node, FunctionType *func_type)
 {
     fmt::print("analyzeBlock\n");
     if (node->sons.size() == 3)
@@ -309,7 +309,7 @@ void analyzeBlock(BlockNode *node, FunctionType *func_type)
     deleteScope();
 }
 
-void analyzeBlockItems(BlockItemsNode *node, FunctionType *func_type)
+void semant::analyzeBlockItems(BlockItemsNode *node, FunctionType *func_type)
 {
     fmt::print("analyzeBlockItems\n");
     if (auto n = node->sons[0]->as<BlockItemNode *>())//BlockItem
@@ -322,7 +322,7 @@ void analyzeBlockItems(BlockItemsNode *node, FunctionType *func_type)
     }
 }
 
-void analyzeBlockItem(BlockItemNode *node, FunctionType *func_type)
+void semant::analyzeBlockItem(BlockItemNode *node, FunctionType *func_type)
 {
     fmt::print("analyzeBlockItem\n");
     if (auto n = node->sons[0]->as<VarDeclNode *>())//VarDecl
@@ -331,7 +331,7 @@ void analyzeBlockItem(BlockItemNode *node, FunctionType *func_type)
         analyzeStmt(reinterpret_cast<StmtNode *>(node->sons[0]), func_type);
 }
 
-void analyzeStmt(StmtNode *node, FunctionType *func_type)
+void semant::analyzeStmt(StmtNode *node, FunctionType *func_type)
 {
     fmt::print("analyzeStmt\n");
     int num = node->sons.size();
@@ -393,14 +393,14 @@ void analyzeStmt(StmtNode *node, FunctionType *func_type)
         }
         else if (reinterpret_cast<BasicType *>(left_type)->getBasic() != reinterpret_cast<BasicType *>(right_type)->getBasic())
         {
-            fmt::print("error: error: left and right expression types do not match\n");
+            fmt::print("error: left and right expression types do not match\n");
             exit(1);
         }
         delete left_type;
     }
 }
 
-Type *analyzeLVal(LValNode *node)
+semant::Type *semant::analyzeLVal(LValNode *node)
 {
     fmt::print("analyzeLVal\n");
     IdentNode *id = reinterpret_cast<IdentNode *>(node->sons[0]);
@@ -436,7 +436,7 @@ Type *analyzeLVal(LValNode *node)
     }
 }
 
-void analyzeIndex(IndexNode *node, ArrayType *array_type)
+void semant::analyzeIndex(IndexNode *node, ArrayType *array_type)
 {
     fmt::print("analyzeIndex\n");
     int num = node->sons.size();
@@ -475,7 +475,7 @@ void analyzeIndex(IndexNode *node, ArrayType *array_type)
     }
 }
 
-Type *analyzeExp(ExpNode *node)
+semant::Type *semant::analyzeExp(ExpNode *node)
 {
     fmt::print("analyzeExp\n");
     int num = node->sons.size();
@@ -507,7 +507,7 @@ Type *analyzeExp(ExpNode *node)
     }
 }
 
-Type *analyzeLAndExp(LAndExpNode *node)
+semant::Type *semant::analyzeLAndExp(LAndExpNode *node)
 {
     fmt::print("analyzeLAndExp\n");
     int num = node->sons.size();
@@ -539,7 +539,7 @@ Type *analyzeLAndExp(LAndExpNode *node)
     }
 }
 
-Type *analyzeEqExp(EqExpNode *node)
+semant::Type *semant::analyzeEqExp(EqExpNode *node)
 {
     fmt::print("analyzeEqExp\n");
     int num = node->sons.size();
@@ -572,7 +572,7 @@ Type *analyzeEqExp(EqExpNode *node)
     }
 }
 
-Type *analyzeRelExp(RelExpNode *node)
+semant::Type *semant::analyzeRelExp(RelExpNode *node)
 {
     fmt::print("analyzeRelExp\n");
     if (node->sons.size() == 1)
@@ -606,7 +606,7 @@ Type *analyzeRelExp(RelExpNode *node)
     }
 }
 
-Type *analyzeAddExp(AddExpNode *node)
+semant::Type *semant::analyzeAddExp(AddExpNode *node)
 {
     fmt::print("analyzeAddExp\n");
     if (node->sons.size() == 1)
@@ -634,7 +634,7 @@ Type *analyzeAddExp(AddExpNode *node)
     }
 }
 
-Type *analyzeMulExp(MulExpNode *node)
+semant::Type *semant::analyzeMulExp(MulExpNode *node)
 {
     fmt::print("analyzeMulExp\n");
     if (node->sons.size() == 1)
@@ -663,7 +663,7 @@ Type *analyzeMulExp(MulExpNode *node)
     }
 }
 
-Type *analyzeUnaryExp(UnaryExpNode *node)
+semant::Type *semant::analyzeUnaryExp(UnaryExpNode *node)
 {
     fmt::print("analyzeUnaryExp\n");
     int num = node->sons.size();
@@ -712,7 +712,7 @@ Type *analyzeUnaryExp(UnaryExpNode *node)
     }
 }
 
-Type *analyzePrimaryExp(PrimaryExpNode *node)
+semant::Type *semant::analyzePrimaryExp(PrimaryExpNode *node)
 {
     fmt::print("analyzePrimaryExp\n");
     if (node->sons[0]->node_type == IntConst)
@@ -732,7 +732,7 @@ Type *analyzePrimaryExp(PrimaryExpNode *node)
     }
 }
 
-void analyzeFuncRParams(FuncRParamsNode *node, FunctionType *func_type)
+void semant::analyzeFuncRParams(FuncRParamsNode *node, FunctionType *func_type)
 {
     fmt::print("analyzeFuncRParams\n");
     if (node->sons.size() == 1)
