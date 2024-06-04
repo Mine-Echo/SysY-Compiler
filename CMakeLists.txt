@@ -25,13 +25,13 @@ message(STATUS "Flex/Bison generated source file extension: ${FB_EXT}")
 # enable all warnings
 if(MSVC)
   add_compile_options(/W3)
-  add_compile_options("$<$<CONFIG:Debug>:/fsanitize=address;/Zi>;$<$<CONFIG:Release>:/O2>")
-  add_link_options("$<$<CONFIG:Debug>:/fsanitize=address;/DEBUG:FULL>")
+  # add_compile_options("$<$<CONFIG:Debug>:/fsanitize=address;/Zi>;$<$<CONFIG:Release>:/O2>")
+  # add_link_options("$<$<CONFIG:Debug>:/fsanitize=address;/DEBUG:FULL>")
 else()
   # disable warnings caused by old version of Flex
   add_compile_options(-Wall -Wextra -Wno-register)
-  add_compile_options("$<$<CONFIG:Debug>:-O0;-g;-fsanitize=address;-fno-omit-frame-pointer;-fno-optimize-sibling-calls>;$<$<CONFIG:Release>:-O2;-DNDEBUG>")
-  add_link_options("$<$<CONFIG:Debug>:-fsanitize=address>")
+  # add_compile_options("$<$<CONFIG:Debug>:-O0;-g;-fsanitize=address;-fno-omit-frame-pointer;-fno-optimize-sibling-calls>;$<$<CONFIG:Release>:-O2;-DNDEBUG>")
+  # add_link_options("$<$<CONFIG:Debug>:-fsanitize=address>")
 endif()
 
 # find Flex/Bison
